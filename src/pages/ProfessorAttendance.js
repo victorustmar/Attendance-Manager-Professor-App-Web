@@ -1,74 +1,141 @@
+// Make sure to install styled-components: npm install styled-components
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import CourseAttendance from "../pages/CourseAttendance"; // from last step
+import styled from "styled-components";
+import CourseAttendance from "./CourseAttendance";
 import { API_BASE } from "../api";
 
+// ************ Styled Components ************
+const PageWrapper = styled.div`
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e1e5c, #5f3dc4);
+  padding: 20px;
+`;
+
+const Card = styled.div`
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 1000px;
+`;
+
+const Header = styled.h2`
+  color: #1e1e5c;
+  margin-bottom: 1rem;
+  text-align: center;
+`;
+
+const BackButton = styled.button`
+  background: #999999;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  &:hover {
+    background: #777777;
+  }
+`;
+
+const ErrorText = styled.p`
+  background: #ffd2d2;
+  color: #d8000c;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+`;
+
+const ListGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+`;
+
+const ListItem = styled.button`
+  padding: 0.75rem 1rem;
+  border: 1px solid #cccccc;
+  border-radius: 0.5rem;
+  background: ${(props) => (props.active ? "#5f3dc4" : "#ffffff")};
+  color: ${(props) => (props.active ? "#ffffff" : "#333333")};
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  &:hover {
+    background: ${(props) => (props.active ? "#4b3399" : "#f1f1f1")};
+  }
+`;
+
+// ************ Component ************
 const ProfessorAttendance = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [message, setMessage] = useState("");
   const token = localStorage.getItem("token");
   const userId = parseInt(localStorage.getItem("user_id"), 10);
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
+
   useEffect(() => {
     axios
       .get(`${API_BASE}/courses/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        // only this professor’s courses
-        const mine = res.data.filter(
-          (c) => c.professor_id === userId
-        );
+        const mine = res.data.filter((c) => c.professor_id === userId);
         setCourses(mine);
       })
       .catch(() => setMessage("Failed to load your courses."));
   }, [token, userId]);
 
-  if (message) return <div className="alert alert-warning">{message}</div>;
+
+const selectedObj = courses.find(c => c.course_id === selectedCourse);
 
   return (
-    <div className="container mt-5">
-        <button
-        className="btn btn-secondary mb-3"
-        onClick={() => navigate("/professor-dashboard")}
-      >
-        ← Back to Dashboard
-      </button>
-    <h2>My Courses</h2>
-    <div className="list-group mb-4">
-      {courses.map((c) => {
-        const suffix = c.course_type === "Lecture" ? c.series : c.group;
-        return (
-          <button
-            key={c.course_id}
-            className={`list-group-item list-group-item-action ${
-              selectedCourse === c.course_id ? "active" : ""
-            }`}
-            onClick={() => setSelectedCourse(c.course_id)}
-          >
-            {c.course_name} ({c.course_type} – {suffix})
-          </button>
-        );
-      })}
-    </div>
+    <PageWrapper>
+      <Card>
+        <BackButton onClick={() => navigate("/professor-dashboard")}>Back to Dashboard</BackButton>
+        <Header>My Courses</Header>
+        {message && <ErrorText>{message}</ErrorText>}
 
-      {selectedCourse && (() => {
-        const c = courses.find(c => c.course_id === selectedCourse);
-        if (!c) return null;
-        return (
-        <CourseAttendance
-        courseId={c.course_id}
-        token={token}
-        courseName={c.course_name}
-        courseType={c.course_type}
-        series={c.series}
-        group={c.group}
-        />
-    );
-    })()}
-    </div>
+        {!message && (
+          <ListGroup>
+            {courses.map((c) => {
+              const suffix = c.course_type === "Lecture" ? c.series : c.group;
+              return (
+                <ListItem
+                  key={c.course_id}
+                  active={selectedCourse === c.course_id}
+                  onClick={() => setSelectedCourse(c.course_id)}
+                >
+                  {c.course_name} ({c.course_type} – {suffix})
+                </ListItem>
+              );
+            })}
+          </ListGroup>
+        )}
+
+        {selectedCourse && selectedObj && (
+  <CourseAttendance
+    courseId={selectedCourse}
+    token={token}
+    courseName={selectedObj.course_name}
+    courseType={selectedObj.course_type}
+    series={selectedObj.series}
+    group={selectedObj.group}
+  />
+)}
+
+      </Card>
+    </PageWrapper>
   );
 };
 
