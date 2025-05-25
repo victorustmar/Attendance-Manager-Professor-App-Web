@@ -1,11 +1,9 @@
-// Make sure to install styled-components: npm install styled-components
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { API_BASE } from "../api";
-
-// ************ Styled Components ************
+import { api } from "../api";
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -97,7 +95,6 @@ const SuccessText = styled.p`
   margin-bottom: 1rem;
 `;
 
-// ************ Component ************
 const RegisterProfessor = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -117,7 +114,7 @@ const RegisterProfessor = () => {
     }
     const fetchFaculties = async () => {
       try {
-        const response = await axios.get(`${API_BASE}/auth/faculties`, { headers: { Authorization: `Bearer ${token}` } });
+        const response = await api.get(`${API_BASE}/auth/faculties`, { headers: { Authorization: `Bearer ${token}` } });
         setFaculties(response.data);
       } catch (err) {
         console.error("Error fetching faculties:", err);
@@ -132,7 +129,7 @@ const RegisterProfessor = () => {
     setSuccess("");
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
+      await api.post(
         `${API_BASE}/auth/register-professor`,
         { full_name: fullName, email, password, faculty_id: facultyId },
         { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }

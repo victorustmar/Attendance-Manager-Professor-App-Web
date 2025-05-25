@@ -1,11 +1,10 @@
-// Make sure to install styled-components: npm install styled-components
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 import { API_BASE } from "../api";
+import { api } from "../api";
 
-// ************ Styled Components ************
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -109,7 +108,6 @@ const Button = styled.button`
   }
 `;
 
-// ************ Component ************
 const CreateCourse = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -141,14 +139,14 @@ const CreateCourse = () => {
       navigate("/");
     } else {
       setIsAuthorized(true);
-      axios.get(`${API_BASE}/courses/professors`).then(res => setProfessors(res.data));
-      axios.get(`${API_BASE}/auth/faculties`).then(res => setFaculties(res.data));
+      api.get(`${API_BASE}/courses/professors`).then(res => setProfessors(res.data));
+      api.get(`${API_BASE}/auth/faculties`).then(res => setFaculties(res.data));
     }
   }, [navigate, token, role]);
 
   useEffect(() => {
     if (selectedFaculty) {
-      axios.get(`${API_BASE}/courses/programmes?faculty_id=${selectedFaculty}`).then(res => setProgrammes(res.data));
+      api.get(`${API_BASE}/courses/programmes?faculty_id=${selectedFaculty}`).then(res => setProgrammes(res.data));
     } else {
       setProgrammes([]);
       setYears([]);
@@ -159,7 +157,7 @@ const CreateCourse = () => {
 
   useEffect(() => {
     if (selectedProgramme) {
-      axios.get(`${API_BASE}/courses/years?programme_id=${selectedProgramme}`).then(res => setYears(res.data));
+      api.get(`${API_BASE}/courses/years?programme_id=${selectedProgramme}`).then(res => setYears(res.data));
     } else {
       setYears([]);
       setSeriesList([]);
@@ -169,7 +167,7 @@ const CreateCourse = () => {
 
   useEffect(() => {
     if (selectedYear) {
-      axios.get(`${API_BASE}/courses/series?year_id=${selectedYear}`).then(res => setSeriesList(res.data));
+      api.get(`${API_BASE}/courses/series?year_id=${selectedYear}`).then(res => setSeriesList(res.data));
     } else {
       setSeriesList([]);
       setGroups([]);
@@ -178,7 +176,7 @@ const CreateCourse = () => {
 
   useEffect(() => {
     if (courseType === "Seminar" && selectedSeries) {
-      axios.get(`${API_BASE}/courses/groups?series_id=${selectedSeries}`).then(res => setGroups(res.data));
+      api.get(`${API_BASE}/courses/groups?series_id=${selectedSeries}`).then(res => setGroups(res.data));
     } else {
       setGroups([]);
     }
@@ -208,7 +206,7 @@ const CreateCourse = () => {
       payload.group_id = selectedGroup;
     }
     try {
-      await axios.post(`${API_BASE}/courses/create_course`, payload, { headers: { Authorization: `Bearer ${token}` } });
+      await api.post(`${API_BASE}/courses/create_course`, payload, { headers: { Authorization: `Bearer ${token}` } });
       setMessage("Course created successfully!");
     } catch {
       setMessage("Error creating course.");

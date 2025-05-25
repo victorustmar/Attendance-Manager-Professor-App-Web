@@ -1,11 +1,9 @@
-// Make sure to install styled-components: npm install styled-components
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { API_BASE } from "../api";
 
-// ************ Styled Components ************
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -96,7 +94,6 @@ const Button = styled.button`
   }
 `;
 
-// ************ Component ************
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -119,7 +116,7 @@ const ChangePassword = () => {
       return;
     }
     try {
-      const response = await axios.post(
+      const response = await api.post(
         `${API_BASE}/professors/change_password`,
         { current_password: currentPassword, new_password: newPassword },
         { headers: { Authorization: `Bearer ${token}` } }
