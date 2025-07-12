@@ -1,11 +1,9 @@
-// Make sure to install styled-components: npm install styled-components
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { API_BASE } from "../api";
-
-// ************ Styled Components ************
+import { api } from "../api";
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -128,7 +126,6 @@ const Button = styled.button`
   }
 `;
 
-// ************ Component ************
 const ManualAttendance = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -141,14 +138,12 @@ const ManualAttendance = () => {
   const [checkedIds, setCheckedIds] = useState(new Set());
   const [message, setMessage] = useState("");
 
-  // guard: only professors
   useEffect(() => {
     if (!token || role !== "professor") navigate("/");
   }, [token, role, navigate]);
 
-  // load all courses this prof teaches
   useEffect(() => {
-    axios
+    api
       .get(`${API_BASE}/courses/courses`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         const mine = res.data.filter(
@@ -159,14 +154,13 @@ const ManualAttendance = () => {
       .catch(() => setMessage("Failed to load your courses"));
   }, [token]);
 
-  // when course changes, fetch its students
   useEffect(() => {
     if (!selectedCourse) {
       setStudents([]);
       setCheckedIds(new Set());
       return;
     }
-    axios
+    api
       .get(
         `${API_BASE}/attendance/manual/eligible_students?course_id=${selectedCourse}`,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -196,14 +190,14 @@ const ManualAttendance = () => {
       setMessage("No students selected");
       return;
     }
-    axios
+    api
       .post(
         `${API_BASE}/attendance/manual`,
         { course_id: parseInt(selectedCourse), date, student_ids: Array.from(checkedIds) },
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      .then(() => setMessage("✅ Manual attendance saved"))
-      .catch(() => setMessage("❌ Failed to save"));
+      .then(() => setMessage("Manual attendance saved"))
+      .catch(() => setMessage("Failed to save"));
   };
 
   return (

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { API_BASE } from "../api";
-
+import { api } from "../api";
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -102,7 +102,7 @@ const CourseList = () => {
       navigate("/");
     } else {
       setIsAuthorized(true);
-      axios
+      api
         .get(`${API_BASE}/courses/courses`, {
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -114,7 +114,7 @@ const CourseList = () => {
   const handleDelete = async (courseId) => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
-      await axios.delete(`${API_BASE}/courses/${courseId}`, {
+      await api.delete(`${API_BASE}/courses/${courseId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setCourses((prev) => prev.filter((c) => c.course_id !== courseId));

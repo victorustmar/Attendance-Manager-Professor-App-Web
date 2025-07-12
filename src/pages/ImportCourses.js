@@ -1,11 +1,9 @@
-// Make sure to install styled-components: npm install styled-components
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { API_BASE } from "../api";
-
-// ************ Styled Components ************
+import { api } from "../api";
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -70,7 +68,6 @@ const BackButton = styled(Button)`
   }
 `;
 
-// ************ Component ************
 const ImportCourses = () => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
@@ -92,7 +89,7 @@ const ImportCourses = () => {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      await axios.post(
+      await api.post(
         `${API_BASE}/courses/import`,
         formData,
         {

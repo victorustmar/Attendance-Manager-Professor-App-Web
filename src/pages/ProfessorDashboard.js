@@ -1,9 +1,8 @@
-// Make sure to install styled-components: npm install styled-components
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
-// ************ Styled Components ************
+import { api } from "../api";
+import { API_BASE } from "../api";
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -25,6 +24,12 @@ const Card = styled.div`
 
 const Header = styled.h1`
   color: #1e1e5c;
+  margin-bottom: 1rem;
+`;
+
+const SubHeader = styled.h2`
+  color: #5f3dc4;
+  font-size: 1.1rem;
   margin-bottom: 2rem;
 `;
 
@@ -57,20 +62,36 @@ const Separator = styled.div`
   margin: 1.5rem 0;
 `;
 
-// ************ Component ************
 const ProfessorDashboard = () => {
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
-    if (!token || role !== "professor") navigate("/");
+    if (!token || role !== "professor") {
+      navigate("/");
+    } else {
+      api.get(`${API_BASE}/professors/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          setFullName(res.data.full_name); // ✅ This sets the name
+        })
+        .catch(() => {
+          localStorage.clear();
+          navigate("/");
+        });
+    }
   }, [navigate]);
 
   return (
     <PageWrapper>
       <Card>
-        <Header>Dashboard</Header>
+        <Header>Welcome!</Header>
+        <SubHeader>Prof. {fullName}</SubHeader>
         <ButtonGrid>
           <Button onClick={() => navigate("/generate-qr")}>Generate Attendance QR Code</Button>
           <Button onClick={() => navigate("/manual-attendance")}>Manual Attendance</Button>

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
+import { api } from "../api";
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;

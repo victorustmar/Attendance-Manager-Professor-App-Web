@@ -1,11 +1,8 @@
-// Make sure to install styled-components: npm install styled-components
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import styled from "styled-components";
 import { API_BASE } from "../api";
-
-// ************ Styled Components ************
+import { api } from "../api";
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -63,13 +60,13 @@ const InfoText = styled.p`
 `;
 
 const QRImage = styled.img`
-  width: 500px;
-  height: 500px;
+ width: 100%;
+ max-width: 500px;   /* won’t grow beyond desktop size */
+ height: auto;       /* preserves aspect ratio */
   margin: 1rem auto;
   display: block;
 `;
 
-// ************ Component ************
 const GenerateQRCode = () => {
   const [qrImage, setQrImage] = useState(null);
   const [courseName, setCourseName] = useState("");
@@ -86,7 +83,7 @@ const GenerateQRCode = () => {
   useEffect(() => {
     const fetchQRCode = async () => {
       try {
-        const response = await axios.get(`${API_BASE}/qr/generate_qr`, {
+        const response = await api.get(`${API_BASE}/qr/generate_qr`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setQrImage(response.data.qr_image);

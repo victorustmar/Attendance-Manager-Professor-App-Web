@@ -1,12 +1,10 @@
-// Make sure to install styled-components: npm install styled-components
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 import CourseAttendance from "./CourseAttendance";
 import { API_BASE } from "../api";
-
-// ************ Styled Components ************
+import { api } from "../api";
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -75,7 +73,6 @@ const ListItem = styled.button`
   }
 `;
 
-// ************ Component ************
 const ProfessorAttendance = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -85,7 +82,7 @@ const ProfessorAttendance = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
+    api
       .get(`${API_BASE}/courses/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       })

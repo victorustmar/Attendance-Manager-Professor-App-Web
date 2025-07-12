@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { API_BASE } from "../api";
+import { api } from "../api";
 
 const PageWrapper = styled.div`
   min-height: 100vh;

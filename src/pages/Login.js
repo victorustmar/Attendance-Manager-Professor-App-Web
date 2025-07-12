@@ -1,10 +1,9 @@
-// Make sure to install styled-components: npm install styled-components
 import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { API_BASE } from "../api";
-
+import { api } from "../api";
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -84,7 +83,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_BASE}/auth/login`, { email, password });
+      const response = await api.post(`${API_BASE}/auth/login`, { email, password });
       const { access_token, role, user_id } = response.data;
       localStorage.setItem("token", access_token);
       localStorage.setItem("role", role);

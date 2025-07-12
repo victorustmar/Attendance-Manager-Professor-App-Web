@@ -1,10 +1,8 @@
-// Make sure to install styled-components: npm install styled-components
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import { API_BASE } from '../api';
-
-// ************ Styled Components ************
+import { api } from "../api";
 const SectionWrapper = styled.div`
   margin-bottom: 1.5rem;
   display: flex;
@@ -73,14 +71,13 @@ const ErrorText = styled.p`
   text-align: center;
 `;
 
-// ************ Component ************
 const CourseAttendance = ({ courseId, courseName, courseType, series, group, token }) => {
   const [dates, setDates] = useState([]);
   const [students, setStudents] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    axios.get(`${API_BASE}/attendance/course/${courseId}`, {
+    api.get(`${API_BASE}/attendance/course/${courseId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
@@ -95,7 +92,7 @@ const CourseAttendance = ({ courseId, courseName, courseType, series, group, tok
     const metaRows = [
       ["Course Name", courseName],
       ["Course Type – Series/Group", `${courseType} – ${suffix}`],
-      []  // blank line before the table
+      [] 
     ];
     const header = ['Student', ...dates, 'Total Present', '% Present'];
     const rows = students.map(s => {
